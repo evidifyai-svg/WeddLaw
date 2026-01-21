@@ -1,0 +1,599 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Wedderburn Law | Client Portal (Offline AI Prototype)</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;700&display=swap" rel="stylesheet">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+
+<body class="bg-app">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-brand border-bottom border-brand-subtle sticky-top">
+    <div class="container-fluid px-3 px-md-4">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="#/home">
+        <span class="brand-mark" aria-hidden="true">W</span>
+        <span class="brand-name">Wedderburn Law</span>
+        <span class="badge rounded-pill text-bg-warning brand-badge">Offline AI</span>
+      </a>
+      <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-sm btn-outline-light" id="btnOpenAdmin" title="Demo: switch to attorney dashboard">
+          <i class="bi bi-briefcase"></i>
+          Attorney View
+        </button>
+        <button class="btn btn-sm btn-outline-light" id="btnOpenChat" title="Ask the offline assistant">
+          <i class="bi bi-chat-dots"></i>
+          Assistant
+        </button>
+        <button class="btn btn-sm btn-outline-light" id="btnReset" title="Clear demo data">
+          <i class="bi bi-arrow-counterclockwise"></i>
+          Reset
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container-fluid px-3 px-md-4 py-4">
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+      <div id="appToast" class="toast text-bg-dark border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body" id="appToastBody">Saved.</div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+      </div>
+    </div>
+
+    <div id="view"></div>
+
+    <footer class="pt-4 mt-4 border-top border-brand-subtle small text-muted">
+      <div class="d-flex flex-column flex-md-row justify-content-between gap-2">
+        <div>
+          <strong>Wedderburn Law</strong> — Estate Planning + Digital Assets (NY / NJ / PA)
+        </div>
+        <div>
+          <span class="me-2">Local-first prototype. Runs on your machine.</span>
+          <a href="#/privacy" class="link-secondary">Privacy & Security</a>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <template id="tpl-home">
+    <div class="row g-4 align-items-stretch">
+      <div class="col-12 col-lg-7">
+        <div class="card card-elev h-100">
+          <div class="card-body p-4 p-lg-5">
+            <div class="d-flex align-items-center gap-2 mb-3">
+              <span class="pill"><i class="bi bi-shield-lock"></i> Secure intake</span>
+              <span class="pill"><i class="bi bi-file-earmark-arrow-up"></i> Upload + OCR</span>
+              <span class="pill"><i class="bi bi-cpu"></i> Offline AI assistant</span>
+            </div>
+            <h1 class="display-6 brand-headline mb-3">Start your estate plan with a modern, organized intake.</h1>
+            <p class="lead text-secondary mb-4">
+              This portal collects what we need to draft wills, powers of attorney, health directives,
+              and a digital-asset plan (crypto, NFTs, social media, equity accounts).
+            </p>
+
+            <div class="row g-3">
+              <div class="col-12 col-md-6">
+                <div class="mini-card h-100">
+                  <div class="d-flex gap-3">
+                    <div class="mini-ico"><i class="bi bi-list-check"></i></div>
+                    <div>
+                      <div class="fw-semibold">Guided checklist</div>
+                      <div class="text-muted small">Answer once; we reuse it across documents.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="mini-card h-100">
+                  <div class="d-flex gap-3">
+                    <div class="mini-ico"><i class="bi bi-magic"></i></div>
+                    <div>
+                      <div class="fw-semibold">Assistant-in-the-loop</div>
+                      <div class="text-muted small">Ask questions; improve intake quality; generate summaries.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="mini-card h-100">
+                  <div class="d-flex gap-3">
+                    <div class="mini-ico"><i class="bi bi-search"></i></div>
+                    <div>
+                      <div class="fw-semibold">OCR-assisted uploads</div>
+                      <div class="text-muted small">Extract text from images in the browser (demo).</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="mini-card h-100">
+                  <div class="d-flex gap-3">
+                    <div class="mini-ico"><i class="bi bi-lock"></i></div>
+                    <div>
+                      <div class="fw-semibold">Encrypted storage (server)</div>
+                      <div class="text-muted small">Submissions saved locally, encrypted at rest.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex flex-column flex-sm-row gap-2 mt-4">
+              <a class="btn btn-brand btn-lg" href="#/start">
+                <i class="bi bi-play-circle me-2"></i>
+                Start Intake
+              </a>
+              <a class="btn btn-outline-secondary btn-lg" href="#/services">View Services</a>
+              <button class="btn btn-outline-secondary btn-lg" id="btnOpenChat2">
+                <i class="bi bi-chat-dots me-2"></i>
+                Ask Assistant
+              </button>
+            </div>
+
+            <div class="mt-4 small text-muted">
+              Tip: Run Ollama locally for offline AI. The assistant button will work once your backend is running.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-5">
+        <div class="card card-elev h-100">
+          <div class="card-body p-4">
+            <h2 class="h5 mb-3">What you’ll provide</h2>
+            <ol class="list-group list-group-numbered list-group-flush">
+              <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                  <div class="fw-semibold">Identity + contacts</div>
+                  <div class="small text-muted">Names, addresses, phone/email</div>
+                </div>
+                <span class="badge text-bg-light">Step 1</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                  <div class="fw-semibold">Family + fiduciaries</div>
+                  <div class="small text-muted">Beneficiaries, guardians, executor/agent</div>
+                </div>
+                <span class="badge text-bg-light">Step 2</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                  <div class="fw-semibold">Assets</div>
+                  <div class="small text-muted">Home, bank, retirement, insurance, business</div>
+                </div>
+                <span class="badge text-bg-light">Step 3</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                  <div class="fw-semibold">Digital assets</div>
+                  <div class="small text-muted">Crypto, NFTs, social, devices, access plan</div>
+                </div>
+                <span class="badge text-bg-light">Step 4</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                  <div class="fw-semibold">Uploads + OCR</div>
+                  <div class="small text-muted">ID, deeds, statements, prior docs</div>
+                </div>
+                <span class="badge text-bg-light">Step 5</span>
+              </li>
+            </ol>
+
+            <div class="mt-4 p-3 rounded-3 bg-soft">
+              <div class="d-flex gap-3">
+                <div class="mini-ico mini-ico-soft"><i class="bi bi-info-circle"></i></div>
+                <div class="small text-secondary">
+                  This package includes a local Python server that encrypts submissions on disk and
+                  a chat endpoint that calls Ollama locally (<code>http://127.0.0.1:11434</code>).
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-3 small">
+              <a href="#/privacy" class="link-secondary">How we protect your information</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <template id="tpl-services">
+    <div class="row g-4">
+      <div class="col-12 col-lg-8">
+        <div class="card card-elev">
+          <div class="card-body p-4 p-lg-5">
+            <h1 class="h3 mb-3">Services</h1>
+            <p class="text-secondary">
+              Wedderburn Law provides accessible estate planning for middle-class families in NY, NJ, and PA,
+              with a signature focus on planning for modern digital assets.
+            </p>
+
+            <div class="row g-3 mt-1">
+              <div class="col-12 col-md-6">
+                <div class="svc-card">
+                  <div class="svc-ico"><i class="bi bi-file-earmark-text"></i></div>
+                  <div>
+                    <div class="fw-semibold">Wills</div>
+                    <div class="small text-muted">Distribution plan, guardianship, executor selection.</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="svc-card">
+                  <div class="svc-ico"><i class="bi bi-diagram-3"></i></div>
+                  <div>
+                    <div class="fw-semibold">Trusts</div>
+                    <div class="small text-muted">Probate-avoidance and controlled distributions.</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="svc-card">
+                  <div class="svc-ico"><i class="bi bi-person-badge"></i></div>
+                  <div>
+                    <div class="fw-semibold">Power of Attorney</div>
+                    <div class="small text-muted">Financial decision-making during incapacity.</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="svc-card">
+                  <div class="svc-ico"><i class="bi bi-heart-pulse"></i></div>
+                  <div>
+                    <div class="fw-semibold">Health Care Proxy & Living Will</div>
+                    <div class="small text-muted">Medical decisions and treatment preferences.</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="svc-card svc-card-highlight">
+                  <div class="svc-ico"><i class="bi bi-wallet2"></i></div>
+                  <div>
+                    <div class="fw-semibold">Digital Asset Estate Planning (Signature)</div>
+                    <div class="small text-muted">
+                      Social media accounts, crypto wallets, NFTs, online businesses, equity trading accounts,
+                      password managers, devices, and access planning for fiduciaries.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex gap-2 mt-4">
+              <a class="btn btn-brand" href="#/start"><i class="bi bi-play-circle me-2"></i>Start Intake</a>
+              <a class="btn btn-outline-secondary" href="#/home">Back</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-4">
+        <div class="card card-elev">
+          <div class="card-body p-4">
+            <h3 class="h6">Assistant</h3>
+            <p class="small text-secondary mb-2">
+              Use the offline assistant to clarify intake questions and improve the completeness of your plan.
+            </p>
+            <button class="btn btn-outline-secondary w-100" id="btnOpenChat3">
+              <i class="bi bi-chat-dots me-2"></i> Open Assistant
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <template id="tpl-privacy">
+    <div class="row g-4">
+      <div class="col-12 col-lg-8">
+        <div class="card card-elev">
+          <div class="card-body p-4 p-lg-5">
+            <h1 class="h3 mb-3">Privacy & Security (Local-first)</h1>
+            <p class="text-secondary">
+              This package is designed for local use on your machine. The Python server stores submissions
+              encrypted at rest. The assistant connects to a local Ollama instance (offline) when configured.
+            </p>
+
+            <div class="callout">
+              <div class="d-flex gap-3">
+                <div class="callout-ico"><i class="bi bi-shield-check"></i></div>
+                <div>
+                  <div class="fw-semibold">Encrypted storage</div>
+                  <div class="small text-secondary">
+                    Submissions are encrypted on disk using a key derived from your passphrase (PBKDF2).
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <h2 class="h5 mt-4">Production hardening (recommended)</h2>
+            <ul class="text-secondary">
+              <li>Client authentication (MFA) + role-based access control</li>
+              <li>Encrypted object storage for uploads (KMS-managed keys)</li>
+              <li>Server-side OCR for PDFs/images (audit logs of extraction)</li>
+              <li>Secure messaging and immutable activity logs</li>
+              <li>Retention rules and deletion workflows aligned to ethics rules</li>
+            </ul>
+
+            <div class="d-flex gap-2 mt-4">
+              <a class="btn btn-outline-secondary" href="#/home">Back</a>
+              <a class="btn btn-brand" href="#/start">Start Intake</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-4">
+        <div class="card card-elev">
+          <div class="card-body p-4">
+            <h3 class="h6">Important notes</h3>
+            <ul class="small text-secondary mb-0">
+              <li>Do not expose this server to the public internet.</li>
+              <li>Do not store private keys or seed phrases in plain text.</li>
+              <li>For client-facing use, add auth and per-client encryption.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <template id="tpl-intake">
+    <div class="row g-4">
+      <div class="col-12 col-lg-8">
+        <div class="card card-elev">
+          <div class="card-body p-4 p-lg-5">
+            <div class="d-flex justify-content-between align-items-start gap-3">
+              <div>
+                <h1 class="h3 mb-1">Client Intake</h1>
+                <div class="text-secondary">Complete the steps below. Save and resume anytime.</div>
+              </div>
+              <div class="text-end">
+                <div class="small text-muted">Progress</div>
+                <div class="fw-semibold" id="progressText">0%</div>
+              </div>
+            </div>
+
+            <div class="progress mt-3" role="progressbar" aria-label="Intake progress">
+              <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+            </div>
+
+            <div class="stepper mt-4" id="stepper"></div>
+
+            <hr class="my-4">
+
+            <form id="intakeForm" novalidate>
+              <div id="stepContainer"></div>
+
+              <div class="d-flex flex-column flex-sm-row justify-content-between gap-2 mt-4">
+                <div class="d-flex gap-2">
+                  <button type="button" class="btn btn-outline-secondary" id="btnPrev">
+                    <i class="bi bi-arrow-left"></i> Back
+                  </button>
+                  <button type="button" class="btn btn-outline-secondary" id="btnSave">
+                    <i class="bi bi-cloud-check"></i> Save
+                  </button>
+                </div>
+
+                <div class="d-flex gap-2">
+                  <button type="button" class="btn btn-brand" id="btnNext">
+                    Next <i class="bi bi-arrow-right"></i>
+                  </button>
+                  <button type="button" class="btn btn-success d-none" id="btnSubmit">
+                    <i class="bi bi-check-circle"></i> Submit Intake (Encrypted)
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-4">
+        <div class="card card-elev">
+          <div class="card-body p-4">
+            <h2 class="h6">Assistant prompts (client-friendly)</h2>
+            <div class="small text-secondary">
+              <ul>
+                <li>“What does ‘executor’ mean, and who should I pick?”</li>
+                <li>“What counts as a digital asset?”</li>
+                <li>“Help me list my crypto wallets without sharing seed phrases.”</li>
+              </ul>
+            </div>
+            <button class="btn btn-outline-secondary w-100" id="btnOpenChat4">
+              <i class="bi bi-chat-dots me-2"></i> Open Assistant
+            </button>
+          </div>
+        </div>
+
+        <div class="card card-elev mt-4">
+          <div class="card-body p-4">
+            <h2 class="h6">What happens next</h2>
+            <ol class="small text-secondary mb-0">
+              <li>We review your intake and uploads</li>
+              <li>We schedule a planning consult</li>
+              <li>We draft + revise documents</li>
+              <li>Signing + execution guidance</li>
+              <li>Optional annual refresh reminders</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <template id="tpl-summary">
+    <div class="row g-4">
+      <div class="col-12 col-lg-8">
+        <div class="card card-elev">
+          <div class="card-body p-4 p-lg-5">
+            <div class="d-flex justify-content-between align-items-start gap-3">
+              <div>
+                <h1 class="h3 mb-1">Intake Summary</h1>
+                <div class="text-secondary">Review your submission. Generate an attorney-facing profile via the assistant.</div>
+              </div>
+              <div class="d-flex gap-2">
+                <button class="btn btn-outline-secondary" id="btnExportJson"><i class="bi bi-download"></i> Export JSON</button>
+                <button class="btn btn-brand" id="btnGenerateProfile"><i class="bi bi-stars"></i> Generate Profile</button>
+                <a class="btn btn-outline-secondary" href="#/home">Done</a>
+              </div>
+            </div>
+
+            <hr class="my-4">
+
+            <div id="summaryContent"></div>
+
+            <div class="mt-4 d-none" id="profilePanel">
+              <hr class="my-4">
+              <h2 class="h6">Attorney-facing profile (AI-generated)</h2>
+              <pre class="p-3 bg-soft rounded-3 small" id="profileText" style="white-space: pre-wrap;"></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-4">
+        <div class="card card-elev">
+          <div class="card-body p-4">
+            <h2 class="h6">Next build steps</h2>
+            <ul class="small text-secondary mb-0">
+              <li>Auth + per-client encryption keys</li>
+              <li>Encrypted uploads + server OCR for PDFs</li>
+              <li>Template merge for drafting docs</li>
+              <li>Audit log + consent tracking</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <template id="tpl-admin">
+    <div class="row g-4">
+      <div class="col-12">
+        <div class="card card-elev">
+          <div class="card-body p-4 p-lg-5">
+            <div class="d-flex flex-column flex-md-row justify-content-between gap-2 align-items-md-center">
+              <div>
+                <h1 class="h3 mb-1">Attorney Dashboard (Local)</h1>
+                <div class="text-secondary">Encrypted submissions stored on this machine (loaded via the server).</div>
+              </div>
+              <div class="d-flex gap-2">
+                <a class="btn btn-brand" href="#/start"><i class="bi bi-plus-circle"></i> New Intake</a>
+                <a class="btn btn-outline-secondary" href="#/home">Client View</a>
+              </div>
+            </div>
+
+            <hr class="my-4">
+
+            <div class="table-responsive">
+              <table class="table align-middle">
+                <thead>
+                  <tr>
+                    <th>Client</th>
+                    <th>State</th>
+                    <th>Services</th>
+                    <th>Digital Assets</th>
+                    <th>Submitted</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="adminTableBody"></tbody>
+              </table>
+            </div>
+
+            <div class="small text-muted">
+              In production, add conflict checks, task queues, and document drafting.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="assistantCanvas" aria-labelledby="assistantCanvasLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="assistantCanvasLabel">
+        <i class="bi bi-cpu"></i> Offline Assistant
+      </h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body d-flex flex-column gap-2">
+      <div class="d-flex align-items-center justify-content-between gap-2">
+        <div class="small text-muted">Runs via local server + Ollama.</div>
+        <span class="badge text-bg-light" id="assistantStatus">Checking…</span>
+      </div>
+
+      <div class="row g-2">
+        <div class="col-6">
+          <label class="form-label small">Mode</label>
+          <select class="form-select form-select-sm" id="assistantMode">
+            <option value="client">Client help</option>
+            <option value="attorney">Attorney workbench</option>
+          </select>
+        </div>
+        <div class="col-6">
+          <label class="form-label small">Include intake context</label>
+          <div class="form-check mt-1">
+            <input class="form-check-input" type="checkbox" id="assistantIncludeContext" checked>
+            <label class="form-check-label small" for="assistantIncludeContext">Yes</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="assistant-chat border rounded-3 p-2 bg-white flex-grow-1 overflow-auto" id="assistantChat" aria-label="Assistant chat transcript"></div>
+
+      <div class="small text-muted" id="assistantHint">
+        Tip: Ask “What counts as a digital asset?” or “Draft a client profile summary from this intake.”
+      </div>
+
+      <div class="input-group">
+        <input type="text" class="form-control" id="assistantInput" placeholder="Ask a question..." />
+        <button class="btn btn-brand" id="assistantSend"><i class="bi bi-send"></i></button>
+      </div>
+
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-secondary btn-sm" id="assistantClear"><i class="bi bi-trash"></i> Clear</button>
+        <button class="btn btn-outline-secondary btn-sm" id="assistantDraftChecklist"><i class="bi bi-list-check"></i> Draft checklist</button>
+      </div>
+
+      <div class="small text-muted">
+        Important: The assistant provides general information and drafting assistance. You should review and finalize all legal work.
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="ocrModal" tabindex="-1" aria-labelledby="ocrModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="ocrModalLabel">OCR Extraction</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="small text-muted mb-2">Preview of extracted text. Use “Apply” to paste into the selected field.</div>
+          <textarea id="ocrText" class="form-control" rows="12" placeholder="OCR output will appear here..."></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-brand" id="btnApplyOcr"><i class="bi bi-magic"></i> Apply to Field</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>

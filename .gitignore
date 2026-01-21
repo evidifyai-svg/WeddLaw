@@ -1,0 +1,15 @@
+# secrets
+.env
+*.env
+.env.*
+__pycache__/
+.venv/
+
+# local encrypted data / submissions
+data/
+*.bin
+
+# OS/editor
+.DS_Store
+.vscode/
+.idea/
